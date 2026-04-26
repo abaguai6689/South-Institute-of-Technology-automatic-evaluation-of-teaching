@@ -1,0 +1,239 @@
+/**
+ * 超星自动评教助手 - 入口页面样式
+ */
+
+/* 批量评教控制面板 */
+#auto-evaluate-batch-panel {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    z-index: 99999;
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#auto-evaluate-batch-panel .batch-panel-header {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    padding: 15px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#auto-evaluate-batch-panel .batch-panel-header span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#auto-evaluate-batch-panel .batch-toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#auto-evaluate-batch-panel .batch-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#auto-evaluate-batch-panel .batch-panel-body {
+    padding: 20px;
+}
+
+#auto-evaluate-batch-panel .batch-info {
+    margin-bottom: 15px;
+}
+
+#auto-evaluate-batch-panel .batch-status,
+#auto-evaluate-batch-panel .batch-progress,
+#auto-evaluate-batch-panel .batch-current {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+#auto-evaluate-batch-panel .status-label,
+#auto-evaluate-batch-panel .progress-label,
+#auto-evaluate-batch-panel .current-label {
+    color: #666;
+}
+
+#auto-evaluate-batch-panel .status-value {
+    font-weight: 600;
+    color: #11998e;
+}
+
+#auto-evaluate-batch-panel .status-value.running {
+    color: #f39c12;
+}
+
+#auto-evaluate-batch-panel .status-value.stopped {
+    color: #e74c3c;
+}
+
+#auto-evaluate-batch-panel .status-value.completed {
+    color: #27ae60;
+}
+
+#auto-evaluate-batch-panel .progress-value {
+    font-weight: 600;
+    color: #333;
+}
+
+#auto-evaluate-batch-panel .current-value {
+    font-weight: 600;
+    color: #667eea;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#auto-evaluate-batch-panel .batch-progress-bar {
+    height: 8px;
+    background: #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+#auto-evaluate-batch-panel .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #11998e, #38ef7d);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+#auto-evaluate-batch-panel .batch-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#auto-evaluate-batch-panel .batch-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+#auto-evaluate-batch-panel .batch-btn.primary {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+#auto-evaluate-batch-panel .batch-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+#auto-evaluate-batch-panel .batch-btn.danger {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+#auto-evaluate-batch-panel .batch-btn.danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+}
+
+#auto-evaluate-batch-panel .batch-options {
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+}
+
+#auto-evaluate-batch-panel .batch-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+}
+
+#auto-evaluate-batch-panel .batch-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #11998e;
+}
+
+/* 通知样式 */
+#batch-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100000;
+    transition: opacity 0.3s;
+}
+
+#batch-notification.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#batch-notification.warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+#batch-notification.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+#batch-notification .notification-icon {
+    font-size: 18px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    #auto-evaluate-batch-panel {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}

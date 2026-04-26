@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超星自动评教助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: 340px;
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+        
+        .status-item:not(:last-child) {
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        
+        .status-label {
+            color: #666;
+        }
+        
+        .status-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .status-value.inactive {
+            color: #999;
+        }
+        
+        .status-value.running {
+            color: #f39c12;
+        }
+        
+        .status-value.completed {
+            color: #27ae60;
+        }
+        
+        .batch-status-card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: none;
+        }
+        
+        .batch-status-card.active {
+            display: block;
+        }
+        
+        .batch-status-card .batch-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .batch-progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .batch-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .batch-info {
+            font-size: 12px;
+            color: #388e3c;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+        }
+        
+        .score-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+        
+        .score-section h3 {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .score-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .score-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        
+        .score-item .name {
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .score-item .value {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .footer {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 11px;
+            color: #aaa;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        
+        .page-type-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .page-type-badge.evaluate {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .page-type-badge.list {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .page-type-badge.other {
+            background: #f5f5f5;
+            color: #757575;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">📝</div>
+            <h1>超星自动评教助手</h1>
+            <p>一键完成教学评价</p>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="status-card">
+            <div class="status-item">
+                <span class="status-label">页面类型</span>
+                <span id="page-type" class="page-type-badge other">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">页面状态</span>
+                <span id="page-status" class="status-value inactive">检测中...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">题目数量</span>
+                <span id="question-count" class="status-value">-</span>
+            </div>
+        </div>
+        
+        <div id="batch-status-card" class="batch-status-card">
+            <div class="batch-title">
+                <span>🚀</span> 批量评教进行中
+            </div>
+            <div class="batch-progress-bar">
+                <div id="batch-progress-fill" class="batch-progress-fill" style="width: 0%"></div>
+            </div>
+            <div id="batch-info" class="batch-info">准备中...</div>
+        </div>
+        
+        <div id="evaluate-buttons">
+            <button id="btn-fill" class="btn btn-primary" disabled>
+                <span>✓</span> 一键自动填写
+            </button>
+            <button id="btn-auto-full" class="btn btn-secondary" disabled>
+                <span>🚀</span> 自动填写并提交
+            </button>
+        </div>
+        
+        <div id="list-buttons" style="display:none;">
+            <button id="btn-start-batch" class="btn btn-secondary">
+                <span>▶</span> 开始全部评教
+            </button>
+        </div>
+        
+        <button id="btn-stop-batch" class="btn btn-danger" style="display:none;">
+            <span>■</span> 停止批量评教
+        </button>
+        
+        <button id="btn-refresh" class="btn btn-secondary" style="background:#f0f0f0;color:#555;margin-top:10px;">
+            <span>↻</span> 刷新状态
+        </button>
+        
+        <div class="score-section">
+            <h3>📊 评分配置预览</h3>
+            <div class="score-list">
+                <div class="score-item">
+                    <div class="name">课程资源</div>
+                    <div class="value">10/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">课程思政</div>
+                    <div class="value">9/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">课程内容</div>
+                    <div class="value">9/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">课程目标</div>
+                    <div class="value">5/5</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">师德师风</div>
+                    <div class="value">5/5</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">教学水平</div>
+                    <div class="value">5/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">指导答疑</div>
+                    <div class="value">5/5</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">教学方法</div>
+                    <div class="value">5/5</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">课堂参与</div>
+                    <div class="value">10/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">知识掌握</div>
+                    <div class="value">10/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">能力提升</div>
+                    <div class="value">10/10</div>
+                </div>
+                <div class="score-item">
+                    <div class="name">素养提升</div>
+                    <div class="value">10/10</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            简答题将自动填写 "无" | 批量评教请在教师列表页面使用
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

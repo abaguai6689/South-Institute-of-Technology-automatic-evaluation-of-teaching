@@ -1,0 +1,195 @@
+/**
+ * 超星自动评教助手 - 样式文件
+ */
+
+/* 浮动控制面板 */
+#auto-evaluate-panel {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    width: 280px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    z-index: 99999;
+    font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+#auto-evaluate-panel .panel-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#auto-evaluate-panel .panel-header span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#auto-evaluate-panel .toggle-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#auto-evaluate-panel .toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#auto-evaluate-panel .panel-body {
+    padding: 20px;
+}
+
+#auto-evaluate-panel .info-text {
+    text-align: center;
+    margin-bottom: 18px;
+    color: #333;
+}
+
+#auto-evaluate-panel .info-text p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+#auto-evaluate-panel .info-text .sub-text {
+    font-size: 13px;
+    color: #888;
+    margin-top: 5px;
+}
+
+#auto-evaluate-panel .action-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+#auto-evaluate-panel .action-btn.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+#auto-evaluate-panel .action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+#auto-evaluate-panel .action-btn.primary:active {
+    transform: translateY(0);
+}
+
+#auto-evaluate-panel .action-btn.secondary {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+#auto-evaluate-panel .action-btn.secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+#auto-evaluate-panel .action-btn.secondary:disabled {
+    background: #ccc;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#auto-evaluate-panel .btn-icon {
+    font-size: 18px;
+}
+
+#auto-evaluate-panel .score-preview {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#auto-evaluate-panel .preview-title {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+#auto-evaluate-panel .score-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+    border-bottom: 1px dashed #e0e0e0;
+}
+
+#auto-evaluate-panel .score-item:last-child {
+    border-bottom: none;
+}
+
+#auto-evaluate-panel .score-item span:first-child {
+    color: #555;
+}
+
+#auto-evaluate-panel .score-item .score {
+    color: #667eea;
+    font-weight: 600;
+}
+
+/* 通知样式 */
+#auto-evaluate-notification {
+    backdrop-filter: blur(10px);
+}
+
+/* 滚动条样式 */
+#auto-evaluate-panel .score-preview::-webkit-scrollbar {
+    width: 4px;
+}
+
+#auto-evaluate-panel .score-preview::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#auto-evaluate-panel .score-preview::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    #auto-evaluate-panel {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}
