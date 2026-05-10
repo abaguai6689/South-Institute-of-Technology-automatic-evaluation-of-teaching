@@ -7,7 +7,7 @@
     position: fixed;
     top: 100px;
     right: 20px;
-    width: 280px;
+    width: 320px;
     background: #ffffff;
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -15,6 +15,9 @@
     font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
 }
 
 #auto-evaluate-panel .panel-header {
@@ -27,6 +30,7 @@
     cursor: move;
     font-size: 15px;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 #auto-evaluate-panel .panel-header span {
@@ -57,6 +61,8 @@
 
 #auto-evaluate-panel .panel-body {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 #auto-evaluate-panel .info-text {
@@ -130,40 +136,85 @@
     font-size: 18px;
 }
 
-#auto-evaluate-panel .score-preview {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 12px;
-    max-height: 200px;
+/* 题目列表部分 */
+#auto-evaluate-panel .score-editor-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+#auto-evaluate-panel .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+#auto-evaluate-panel .questions-list {
+    max-height: 300px;
     overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f8f9fa;
 }
 
-#auto-evaluate-panel .preview-title {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-#auto-evaluate-panel .score-item {
+#auto-evaluate-panel .question-item {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
-    font-size: 13px;
-    border-bottom: 1px dashed #e0e0e0;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
 }
 
-#auto-evaluate-panel .score-item:last-child {
+#auto-evaluate-panel .question-item:hover {
+    background: white;
+}
+
+#auto-evaluate-panel .question-item:last-child {
     border-bottom: none;
 }
 
-#auto-evaluate-panel .score-item span:first-child {
-    color: #555;
+#auto-evaluate-panel .q-title {
+    font-size: 13px;
+    color: #333;
+    flex: 1;
+    word-break: break-word;
 }
 
-#auto-evaluate-panel .score-item .score {
-    color: #667eea;
+#auto-evaluate-panel .q-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+#auto-evaluate-panel .score-value {
+    font-size: 13px;
     font-weight: 600;
+    color: #667eea;
+    min-width: 45px;
+    text-align: right;
+}
+
+#auto-evaluate-panel .edit-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#auto-evaluate-panel .edit-btn:hover {
+    background: #764ba2;
+    transform: scale(1.1);
 }
 
 /* 通知样式 */
@@ -172,15 +223,28 @@
 }
 
 /* 滚动条样式 */
-#auto-evaluate-panel .score-preview::-webkit-scrollbar {
+#auto-evaluate-panel .questions-list::-webkit-scrollbar {
     width: 4px;
 }
 
-#auto-evaluate-panel .score-preview::-webkit-scrollbar-track {
+#auto-evaluate-panel .questions-list::-webkit-scrollbar-track {
     background: transparent;
 }
 
-#auto-evaluate-panel .score-preview::-webkit-scrollbar-thumb {
+#auto-evaluate-panel .questions-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}
+
+#auto-evaluate-panel .panel-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+#auto-evaluate-panel .panel-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#auto-evaluate-panel .panel-body::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 2px;
 }
