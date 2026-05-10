@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "超星自动评教助手",
-  "version": "2.0.1",
-  "description": "自动填写南工超星评教系统，支持批量一键评教",
+  "version": "2.1.0",
+  "description": "自动填写南工超星评教系统，支持批量一键评教，支持修改每个题目的评分",
   "permissions": [
     "activeTab",
     "storage",
