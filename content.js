@@ -1,6 +1,7 @@
 /**
  * 超星自动评教助手 - 评教页面内容脚本
  * 自动填写评教表单并支持完整提交流程
+ * 支持可修改的题目评分设置
  */
 
 (function() {
@@ -32,6 +33,30 @@
 
     // 批量模式状态
     let isBatchMode = false;
+    
+    // 自定义评分存储
+    let customScores = {};
+
+    /**
+     * 从 Storage 加载自定义评分
+     */
+    function loadCustomScores() {
+        return new Promise(resolve => {
+            chrome.storage.local.get(['customScores'], (result) => {
+                customScores = result.customScores || {};
+                resolve(customScores);
+            });
+        });
+    }
+
+    /**
+     * 保存自定义评分到 Storage
+     */
+    function saveCustomScores() {
+        return new Promise(resolve => {
+            chrome.storage.local.set({ customScores }, resolve);
+        });
+    }
 
     /**
      * 从页面解析题目信息
@@ -89,6 +114,12 @@
      * 根据题目名称获取应填分数
      */
     function getScoreForQuestion(title, maxScore) {
+        // 优先使用自定义评分
+        const customScore = customScores[title];
+        if (customScore !== undefined) {
+            return customScore;
+        }
+        
         for (const [key, value] of Object.entries(DEFAULT_SCORES)) {
             if (title.includes(key)) {
                 return Math.min(value.score, maxScore);
@@ -329,6 +360,153 @@
     }
 
     /**
+     * 显示评分编辑对话框
+     */
+    function showScoreEditDialog(question) {
+        const currentScore = customScores[question.title] !== undefined 
+            ? customScores[question.title] 
+            : getScoreForQuestion(question.title, question.maxScore);
+        
+        const dialog = document.createElement('div');
+        dialog.id = 'score-edit-dialog';
+        dialog.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000000;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            font-family: 'Microsoft YaHei', sans-serif;
+        `;
+        
+        const overlay = document.createElement('div');
+        overlay.id = 'score-edit-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999999;
+        `;
+        
+        dialog.innerHTML = `
+            <h3 style="margin: 0 0 16px 0; color: #333; font-size: 18px;">编辑评分</h3>
+            <div style="margin-bottom: 12px; color: #666; font-size: 14px;">
+                <strong>题目：</strong>${question.title}
+            </div>
+            <div style="margin-bottom: 16px; color: #666; font-size: 14px;">
+                <strong>分值范围：</strong>${question.minScore || 0} - ${question.maxScore} 分
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 500;">手动输入：</label>
+                <input type="number" id="score-input" value="${currentScore}" 
+                    min="${question.minScore || 0}" max="${question.maxScore}" step="0.1"
+                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;">
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 8px; color: #555; font-weight: 500;">快速选择：</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                    <button class="quick-btn" data-score="${question.minScore || 0}" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 500; color: #667eea; transition: all 0.2s;">最低分 (${question.minScore || 0})</button>
+                    <button class="quick-btn" data-score="${(question.maxScore + (question.minScore || 0)) / 2}" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 500; color: #667eea; transition: all 0.2s;">中位分 (${((question.maxScore + (question.minScore || 0)) / 2).toFixed(1)})</button>
+                    <button class="quick-btn" data-score="${question.maxScore}" style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-weight: 500; color: #667eea; transition: all 0.2s;">最高分 (${question.maxScore})</button>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button id="btn-cancel-edit" style="flex: 1; padding: 12px; background: #f0f0f0; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: #555; transition: all 0.3s;">取消</button>
+                <button id="btn-confirm-edit" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 6px; cursor: pointer; font-weight: 600; color: white; transition: all 0.3s;">确定</button>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        document.body.appendChild(dialog);
+        
+        const input = dialog.querySelector('#score-input');
+        const quickBtns = dialog.querySelectorAll('.quick-btn');
+        const confirmBtn = dialog.querySelector('#btn-confirm-edit');
+        const cancelBtn = dialog.querySelector('#btn-cancel-edit');
+        
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                input.value = btn.dataset.score;
+                input.focus();
+            });
+            
+            btn.addEventListener('mouseover', () => {
+                btn.style.background = '#667eea';
+                btn.style.color = 'white';
+            });
+            
+            btn.addEventListener('mouseout', () => {
+                btn.style.background = 'white';
+                btn.style.color = '#667eea';
+            });
+        });
+        
+        confirmBtn.addEventListener('click', () => {
+            const score = parseFloat(input.value);
+            if (score >= (question.minScore || 0) && score <= question.maxScore) {
+                customScores[question.title] = score;
+                saveCustomScores();
+                updateQuestionsPanel();
+                removeDialog();
+                showNotification(`已更新 "${question.title}" 的评分为 ${score}`, 'success');
+            } else {
+                showNotification(`分值应在 ${question.minScore || 0} - ${question.maxScore} 之间`, 'error');
+            }
+        });
+        
+        cancelBtn.addEventListener('click', removeDialog);
+        overlay.addEventListener('click', removeDialog);
+        
+        function removeDialog() {
+            if (dialog.parentNode) document.body.removeChild(dialog);
+            if (overlay.parentNode) document.body.removeChild(overlay);
+        }
+        
+        input.focus();
+    }
+
+    /**
+     * 更新题目列表面板
+     */
+    function updateQuestionsPanel() {
+        const questions = parseQuestions().filter(q => !q.isTextQuestion);
+        const listContainer = document.querySelector('#auto-evaluate-panel .questions-list');
+        
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        
+        questions.forEach(question => {
+            const score = customScores[question.title] !== undefined 
+                ? customScores[question.title]
+                : getScoreForQuestion(question.title, question.maxScore);
+            
+            const item = document.createElement('div');
+            item.className = 'question-item';
+            item.innerHTML = `
+                <div class="q-title">${question.title}</div>
+                <div class="q-score">
+                    <div class="score-value">${score}/${question.maxScore}</div>
+                    <button class="edit-btn" title="编辑">✎</button>
+                </div>
+            `;
+            
+            const editBtn = item.querySelector('.edit-btn');
+            editBtn.addEventListener('click', () => showScoreEditDialog(question));
+            
+            listContainer.appendChild(item);
+        });
+    }
+
+    /**
      * 创建浮动控制面板
      */
     function createControlPanel() {
@@ -354,22 +532,10 @@
                     <span class="btn-icon">🚀</span>
                     自动填写并提交
                 </button>
-                <div class="score-preview">
-                    <div class="preview-title">评分预览：</div>
-                    <div class="preview-content">
-                        <div class="score-item"><span>课程资源</span><span class="score">10/10</span></div>
-                        <div class="score-item"><span>课程思政</span><span class="score">9/10</span></div>
-                        <div class="score-item"><span>课程内容</span><span class="score">9/10</span></div>
-                        <div class="score-item"><span>课程目标</span><span class="score">5/5</span></div>
-                        <div class="score-item"><span>师德师风</span><span class="score">5/5</span></div>
-                        <div class="score-item"><span>教学水平</span><span class="score">5/10</span></div>
-                        <div class="score-item"><span>指导答疑</span><span class="score">5/5</span></div>
-                        <div class="score-item"><span>教学方法</span><span class="score">5/5</span></div>
-                        <div class="score-item"><span>课堂参与</span><span class="score">10/10</span></div>
-                        <div class="score-item"><span>知识掌握</span><span class="score">10/10</span></div>
-                        <div class="score-item"><span>能力提升</span><span class="score">10/10</span></div>
-                        <div class="score-item"><span>素养提升</span><span class="score">10/10</span></div>
-                    </div>
+                
+                <div class="score-editor-section">
+                    <div class="section-title">📋 题目评分编辑</div>
+                    <div class="questions-list"></div>
                 </div>
             </div>
         `;
@@ -403,6 +569,9 @@
             body.style.display = isMinimized ? 'none' : 'block';
             toggleBtn.textContent = isMinimized ? '+' : '−';
         });
+
+        // 初始化题目列表
+        updateQuestionsPanel();
 
         makeDraggable(panel);
     }
@@ -488,8 +657,12 @@
     /**
      * 初始化
      */
-    function init() {
+    async function init() {
         console.log('[自动评教] 评教页面脚本已加载');
+        
+        // 加载自定义评分
+        await loadCustomScores();
+        
         addAnimations();
         createControlPanel();
 
